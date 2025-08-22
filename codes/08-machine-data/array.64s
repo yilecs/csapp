@@ -3,46 +3,47 @@
 	.globl	fix_ele
 	.type	fix_ele, @function
 fix_ele:
-.LFB12:
+.LFB11:
 	.cfi_startproc
 	salq	$6, %rsi
 	addq	%rsi, %rdi
 	movl	(%rdi,%rdx,4), %eax
 	ret
 	.cfi_endproc
-.LFE12:
+.LFE11:
 	.size	fix_ele, .-fix_ele
 	.globl	var_ele
 	.type	var_ele, @function
 var_ele:
-.LFB13:
+.LFB12:
 	.cfi_startproc
 	imulq	%rdx, %rdi
 	leaq	(%rsi,%rdi,4), %rax
 	movl	(%rax,%rcx,4), %eax
 	ret
 	.cfi_endproc
-.LFE13:
+.LFE12:
 	.size	var_ele, .-var_ele
 	.globl	vec_ele
 	.type	vec_ele, @function
 vec_ele:
-.LFB14:
+.LFB13:
 	.cfi_startproc
-	imulq	%rdx, %rdi
-	addq	%rdi, %rcx
-	movl	(%rsi,%rcx,4), %eax
+	imulq	%rdi, %rdx
+	addq	%rcx, %rdx
+	movl	(%rsi,%rdx,4), %eax
 	ret
 	.cfi_endproc
-.LFE14:
+.LFE13:
 	.size	vec_ele, .-vec_ele
 	.globl	fix_column
 	.type	fix_column, @function
 fix_column:
-.LFB15:
+.LFB14:
 	.cfi_startproc
 	movl	$0, %eax
 	jmp	.L5
+	.p2align 5
 .L6:
 	movq	%rax, %rcx
 	salq	$6, %rcx
@@ -53,17 +54,18 @@ fix_column:
 .L5:
 	cmpq	$15, %rax
 	jbe	.L6
-	rep; ret
+	ret
 	.cfi_endproc
-.LFE15:
+.LFE14:
 	.size	fix_column, .-fix_column
 	.globl	vec_column
 	.type	vec_column, @function
 vec_column:
-.LFB16:
+.LFB15:
 	.cfi_startproc
 	movl	$0, %eax
 	jmp	.L8
+	.p2align 5
 .L9:
 	movq	%rax, %r8
 	imulq	%rdi, %r8
@@ -74,17 +76,18 @@ vec_column:
 .L8:
 	cmpq	%rdi, %rax
 	jb	.L9
-	rep; ret
+	ret
 	.cfi_endproc
-.LFE16:
+.LFE15:
 	.size	vec_column, .-vec_column
 	.globl	var_column
 	.type	var_column, @function
 var_column:
-.LFB17:
+.LFB16:
 	.cfi_startproc
 	movl	$0, %eax
 	jmp	.L11
+	.p2align 5
 .L12:
 	movq	%rax, %r8
 	imulq	%rdi, %r8
@@ -95,49 +98,51 @@ var_column:
 .L11:
 	cmpq	%rdi, %rax
 	jb	.L12
-	rep; ret
+	ret
 	.cfi_endproc
-.LFE17:
+.LFE16:
 	.size	var_column, .-var_column
 	.globl	fix_column_p
 	.type	fix_column_p, @function
 fix_column_p:
-.LFB18:
+.LFB17:
 	.cfi_startproc
 	salq	$2, %rsi
 	leaq	(%rdi,%rsi), %rax
 	leaq	1024(%rdi,%rsi), %rsi
+	.p2align 5
 .L14:
 	movl	(%rax), %ecx
 	movl	%ecx, (%rdx)
 	addq	$4, %rdx
 	addq	$64, %rax
-	cmpq	%rsi, %rax
+	cmpq	%rax, %rsi
 	jne	.L14
-	rep; ret
+	ret
 	.cfi_endproc
-.LFE18:
+.LFE17:
 	.size	fix_column_p, .-fix_column_p
 	.globl	var_column_p
 	.type	var_column_p, @function
 var_column_p:
-.LFB19:
+.LFB18:
 	.cfi_startproc
 	leaq	(%rsi,%rdx,4), %rax
 	salq	$2, %rdi
 	leaq	(%rcx,%rdi), %rsi
-	jmp	.L17
-.L18:
+	jmp	.L16
+	.p2align 4
+.L17:
 	movl	(%rax), %edx
 	movl	%edx, (%rcx)
 	addq	$4, %rcx
 	addq	%rdi, %rax
-.L17:
+.L16:
 	cmpq	%rsi, %rcx
-	jne	.L18
-	rep; ret
+	jne	.L17
+	ret
 	.cfi_endproc
-.LFE19:
+.LFE18:
 	.size	var_column_p, .-var_column_p
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (GNU) 15.2.1 20250813"
 	.section	.note.GNU-stack,"",@progbits
