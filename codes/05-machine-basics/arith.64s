@@ -1,0 +1,70 @@
+	.file	"arith.c"
+	.text
+	.globl	plus
+	.type	plus, @function
+plus:
+.LFB0:
+	.cfi_startproc
+	endbr64
+	leaq	(%rdi,%rsi), %rax
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	plus, .-plus
+	.globl	arith
+	.type	arith, @function
+arith:
+.LFB1:
+	.cfi_startproc
+	endbr64
+	leaq	(%rdi,%rsi), %rax
+	addq	%rdx, %rax
+	leaq	(%rsi,%rsi,2), %rdx
+	salq	$4, %rdx
+	leaq	4(%rdi,%rdx), %rdx
+	imulq	%rdx, %rax
+	ret
+	.cfi_endproc
+.LFE1:
+	.size	arith, .-arith
+	.globl	m12
+	.type	m12, @function
+m12:
+.LFB2:
+	.cfi_startproc
+	endbr64
+	leaq	(%rdi,%rdi,2), %rax
+	salq	$2, %rax
+	ret
+	.cfi_endproc
+.LFE2:
+	.size	m12, .-m12
+	.globl	scale
+	.type	scale, @function
+scale:
+.LFB3:
+	.cfi_startproc
+	endbr64
+	leaq	4(%rdi,%rsi,8), %rax
+	ret
+	.cfi_endproc
+.LFE3:
+	.size	scale, .-scale
+	.ident	"GCC: (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0"
+	.section	.note.GNU-stack,"",@progbits
+	.section	.note.gnu.property,"a"
+	.align 8
+	.long	1f - 0f
+	.long	4f - 1f
+	.long	5
+0:
+	.string	"GNU"
+1:
+	.align 8
+	.long	0xc0000002
+	.long	3f - 2f
+2:
+	.long	0x3
+3:
+	.align 8
+4:
