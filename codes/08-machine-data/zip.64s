@@ -3,97 +3,108 @@
 	.globl	get_digit
 	.type	get_digit, @function
 get_digit:
-.LFB34:
+.LFB22:
 	.cfi_startproc
 	movl	(%rdi,%rsi,4), %eax
 	ret
 	.cfi_endproc
-.LFE34:
+.LFE22:
 	.size	get_digit, .-get_digit
 	.globl	zincr
 	.type	zincr, @function
 zincr:
-.LFB35:
+.LFB23:
 	.cfi_startproc
 	movl	$0, %eax
 	jmp	.L3
+	.p2align 5
 .L4:
-	addl	$1, (%rdi,%rax,4)
+	leaq	(%rdi,%rax,4), %rcx
+	movl	(%rcx), %esi
+	leal	1(%rsi), %edx
+	movl	%edx, (%rcx)
 	addq	$1, %rax
 .L3:
 	cmpq	$4, %rax
 	jbe	.L4
-	rep; ret
+	ret
 	.cfi_endproc
-.LFE35:
+.LFE23:
 	.size	zincr, .-zincr
 	.globl	zincr_p
 	.type	zincr_p, @function
 zincr_p:
-.LFB36:
+.LFB24:
 	.cfi_startproc
-	leaq	20(%rdi), %rax
+	leaq	20(%rdi), %rdx
 .L6:
-	addl	$1, (%rdi)
+	movl	(%rdi), %eax
+	addl	$1, %eax
+	movl	%eax, (%rdi)
 	addq	$4, %rdi
-	cmpq	%rax, %rdi
+	cmpq	%rdi, %rdx
 	jne	.L6
-	rep; ret
+	ret
 	.cfi_endproc
-.LFE36:
+.LFE24:
 	.size	zincr_p, .-zincr_p
 	.globl	zincr_v
 	.type	zincr_v, @function
 zincr_v:
-.LFB37:
+.LFB25:
 	.cfi_startproc
 	movl	$0, %eax
-.L9:
-	addl	$1, (%rdi,%rax)
+.L8:
+	leaq	(%rdi,%rax), %rcx
+	movl	(%rcx), %esi
+	leal	1(%rsi), %edx
+	movl	%edx, (%rcx)
 	addq	$4, %rax
 	cmpq	$20, %rax
-	jne	.L9
-	rep; ret
+	jne	.L8
+	ret
 	.cfi_endproc
-.LFE37:
+.LFE25:
 	.size	zincr_v, .-zincr_v
 	.globl	get_pgh_zip
 	.type	get_pgh_zip, @function
 get_pgh_zip:
-.LFB38:
+.LFB26:
 	.cfi_startproc
-	leaq	(%rdi,%rdi,4), %rax
-	leaq	pgh(,%rax,4), %rax
+	leaq	(%rdi,%rdi,4), %rdx
+	leaq	pgh(%rip), %rax
+	leaq	(%rax,%rdx,4), %rax
 	ret
 	.cfi_endproc
-.LFE38:
+.LFE26:
 	.size	get_pgh_zip, .-get_pgh_zip
 	.globl	get_pgh_digit
 	.type	get_pgh_digit, @function
 get_pgh_digit:
-.LFB39:
+.LFB27:
 	.cfi_startproc
 	leaq	(%rdi,%rdi,4), %rax
-	addq	%rax, %rsi
-	movl	pgh(,%rsi,4), %eax
+	addq	%rsi, %rax
+	leaq	pgh(%rip), %rdx
+	movl	(%rdx,%rax,4), %eax
 	ret
 	.cfi_endproc
-.LFE39:
+.LFE27:
 	.size	get_pgh_digit, .-get_pgh_digit
 	.globl	get_univ_digit
 	.type	get_univ_digit, @function
 get_univ_digit:
-.LFB40:
+.LFB28:
 	.cfi_startproc
-	salq	$2, %rsi
-	addq	univ(,%rdi,8), %rsi
-	movl	(%rsi), %eax
+	leaq	univ(%rip), %rax
+	movq	(%rax,%rdi,8), %rax
+	movl	(%rax,%rsi,4), %eax
 	ret
 	.cfi_endproc
-.LFE40:
+.LFE28:
 	.size	get_univ_digit, .-get_univ_digit
 	.globl	univ
-	.data
+	.section	.data.rel.local,"aw"
 	.align 16
 	.type	univ, @object
 	.size	univ, 24
@@ -102,6 +113,7 @@ univ:
 	.quad	cmu
 	.quad	ucb
 	.globl	pgh
+	.data
 	.align 32
 	.type	pgh, @object
 	.size	pgh, 80
@@ -156,5 +168,5 @@ cmu:
 	.long	2
 	.long	1
 	.long	3
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (GNU) 15.2.1 20250813"
 	.section	.note.GNU-stack,"",@progbits

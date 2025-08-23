@@ -3,124 +3,124 @@
 	.globl	dadd
 	.type	dadd, @function
 dadd:
-.LFB34:
+.LFB22:
 	.cfi_startproc
 	addsd	%xmm1, %xmm0
 	ret
 	.cfi_endproc
-.LFE34:
+.LFE22:
 	.size	dadd, .-dadd
 	.globl	fadd
 	.type	fadd, @function
 fadd:
-.LFB35:
+.LFB23:
 	.cfi_startproc
 	addss	%xmm1, %xmm0
 	ret
 	.cfi_endproc
-.LFE35:
+.LFE23:
 	.size	fadd, .-fadd
 	.globl	dincr
 	.type	dincr, @function
 dincr:
-.LFB36:
+.LFB24:
 	.cfi_startproc
-	movapd	%xmm0, %xmm1
-	movsd	(%rdi), %xmm0
-	addsd	%xmm0, %xmm1
-	movsd	%xmm1, (%rdi)
+	movsd	(%rdi), %xmm1
+	addsd	%xmm1, %xmm0
+	movsd	%xmm0, (%rdi)
+	movapd	%xmm1, %xmm0
 	ret
 	.cfi_endproc
-.LFE36:
+.LFE24:
 	.size	dincr, .-dincr
 	.globl	dvprod
 	.type	dvprod, @function
 dvprod:
-.LFB37:
+.LFB25:
 	.cfi_startproc
-	xorpd	%xmm0, %xmm0
+	pxor	%xmm1, %xmm1
 	movl	$0, %eax
 	jmp	.L5
+	.p2align 5
 .L6:
-	movsd	(%rdx,%rax,8), %xmm1
-	mulsd	(%rsi,%rax,8), %xmm1
-	addsd	%xmm1, %xmm0
+	movsd	(%rdx,%rax,8), %xmm0
+	mulsd	(%rsi,%rax,8), %xmm0
+	addsd	%xmm0, %xmm1
 	addq	$1, %rax
 .L5:
 	cmpq	%rdi, %rax
 	jb	.L6
-	rep; ret
+	movapd	%xmm1, %xmm0
+	ret
 	.cfi_endproc
-.LFE37:
+.LFE25:
 	.size	dvprod, .-dvprod
 	.globl	fvprod
 	.type	fvprod, @function
 fvprod:
-.LFB38:
+.LFB26:
 	.cfi_startproc
-	xorps	%xmm0, %xmm0
+	pxor	%xmm1, %xmm1
 	movl	$0, %eax
 	jmp	.L8
+	.p2align 5
 .L9:
-	movss	(%rdx,%rax,4), %xmm1
-	mulss	(%rsi,%rax,4), %xmm1
-	addss	%xmm1, %xmm0
+	movss	(%rdx,%rax,4), %xmm0
+	mulss	(%rsi,%rax,4), %xmm0
+	addss	%xmm0, %xmm1
 	addq	$1, %rax
 .L8:
 	cmpq	%rdi, %rax
 	jb	.L9
-	rep; ret
+	movaps	%xmm1, %xmm0
+	ret
 	.cfi_endproc
-.LFE38:
+.LFE26:
 	.size	fvprod, .-fvprod
 	.globl	gt
 	.type	gt, @function
 gt:
-.LFB39:
+.LFB27:
 	.cfi_startproc
-	ucomiss	%xmm1, %xmm0
+	comiss	%xmm1, %xmm0
 	seta	%al
 	movzbl	%al, %eax
 	ret
 	.cfi_endproc
-.LFE39:
+.LFE27:
 	.size	gt, .-gt
 	.globl	magnitude
 	.type	magnitude, @function
 magnitude:
-.LFB40:
+.LFB28:
 	.cfi_startproc
 	movl	$0, %edx
 	movsd	.LC2(%rip), %xmm1
-	xorpd	%xmm2, %xmm2
-	movapd	%xmm2, %xmm4
-	movsd	.LC3(%rip), %xmm3
 	jmp	.L12
+	.p2align 5
 .L13:
-	divsd	%xmm3, %xmm1
+	divsd	.LC3(%rip), %xmm1
 	addq	$1, %rdx
 .L12:
+	pxor	%xmm2, %xmm2
 	ucomisd	%xmm2, %xmm1
 	jp	.L13
-	ucomisd	%xmm4, %xmm1
 	jne	.L13
 	movl	$0, %eax
-	xorpd	%xmm1, %xmm1
-	movapd	%xmm1, %xmm3
-	movsd	.LC3(%rip), %xmm2
-	jmp	.L14
-.L15:
-	divsd	%xmm2, %xmm0
+	jmp	.L15
+	.p2align 5
+.L16:
+	divsd	.LC3(%rip), %xmm0
 	addq	$1, %rax
-.L14:
+.L15:
+	pxor	%xmm1, %xmm1
 	ucomisd	%xmm1, %xmm0
-	jp	.L15
-	ucomisd	%xmm3, %xmm0
-	jne	.L15
+	jp	.L16
+	jne	.L16
 	subq	%rdx, %rax
 	ret
 	.cfi_endproc
-.LFE40:
+.LFE28:
 	.size	magnitude, .-magnitude
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .LC4:
@@ -131,44 +131,37 @@ magnitude:
 	.globl	main
 	.type	main, @function
 main:
-.LFB41:
+.LFB29:
 	.cfi_startproc
-	pushq	%rbx
-	.cfi_def_cfa_offset 16
-	.cfi_offset 3, -16
-	subq	$16, %rsp
+	subq	$24, %rsp
 	.cfi_def_cfa_offset 32
 	cmpl	$2, %edi
-	je	.L17
-	movq	(%rsi), %rdx
-	movl	$.LC4, %esi
-	movl	$1, %edi
+	je	.L21
+	movq	(%rsi), %rsi
+	leaq	.LC4(%rip), %rdi
 	movl	$0, %eax
-	call	__printf_chk
-	jmp	.L18
-.L17:
-	movq	8(%rsi), %rdi
-	movl	$0, %esi
-	call	strtod
-	movsd	%xmm0, 8(%rsp)
-	movq	8(%rsp), %rbx
-	call	magnitude
-	movq	%rax, %rdx
-	movq	%rbx, 8(%rsp)
-	movsd	8(%rsp), %xmm0
-	movl	$.LC5, %esi
-	movl	$1, %edi
-	movl	$1, %eax
-	call	__printf_chk
-.L18:
+	call	printf@PLT
+.L22:
 	movl	$0, %eax
-	addq	$16, %rsp
-	.cfi_def_cfa_offset 16
-	popq	%rbx
+	addq	$24, %rsp
+	.cfi_remember_state
 	.cfi_def_cfa_offset 8
 	ret
+.L21:
+	.cfi_restore_state
+	movq	8(%rsi), %rdi
+	movl	$0, %esi
+	call	strtod@PLT
+	movsd	%xmm0, 8(%rsp)
+	call	magnitude
+	movq	%rax, %rsi
+	movsd	8(%rsp), %xmm0
+	leaq	.LC5(%rip), %rdi
+	movl	$1, %eax
+	call	printf@PLT
+	jmp	.L22
 	.cfi_endproc
-.LFE41:
+.LFE29:
 	.size	main, .-main
 	.section	.rodata.cst8,"aM",@progbits,8
 	.align 8
@@ -179,5 +172,5 @@ main:
 .LC3:
 	.long	0
 	.long	1076101120
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (GNU) 15.2.1 20250813"
 	.section	.note.GNU-stack,"",@progbits
