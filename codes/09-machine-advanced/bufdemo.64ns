@@ -3,8 +3,9 @@
 	.globl	gets
 	.type	gets, @function
 gets:
-.LFB34:
+.LFB39:
 	.cfi_startproc
+	endbr64
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
@@ -13,26 +14,29 @@ gets:
 	.cfi_offset 3, -24
 	subq	$8, %rsp
 	.cfi_def_cfa_offset 32
-	movq	%rdi, %rbp
+	movq	%rdi, %rbx
 	movq	stdin(%rip), %rdi
-	call	_IO_getc
-	movq	%rbp, %rcx
+	call	getc@PLT
+	movq	%rbx, %rdx
 	jmp	.L2
 .L3:
-	leaq	1(%rcx), %rbx
-	movb	%al, (%rcx)
+	leaq	1(%rdx), %rbp
+	movb	%al, (%rdx)
 	movq	stdin(%rip), %rdi
-	call	_IO_getc
-	movq	%rbx, %rcx
+	call	getc@PLT
+	movq	%rbp, %rdx
 .L2:
 	cmpl	$-1, %eax
-	setne	%r8b
+	setne	%cl
 	cmpl	$10, %eax
 	setne	%sil
-	testb	%sil, %r8b
+	testb	%cl, %cl
+	je	.L5
+	testb	%sil, %sil
 	jne	.L3
-	movb	$0, (%rcx)
-	movq	%rbp, %rax
+.L5:
+	movb	$0, (%rdx)
+	movq	%rbx, %rax
 	addq	$8, %rsp
 	.cfi_def_cfa_offset 24
 	popq	%rbx
@@ -41,30 +45,38 @@ gets:
 	.cfi_def_cfa_offset 8
 	ret
 	.cfi_endproc
-.LFE34:
+.LFE39:
 	.size	gets, .-gets
 	.globl	echo
 	.type	echo, @function
 echo:
-.LFB35:
+.LFB40:
 	.cfi_startproc
-	subq	$24, %rsp
+	endbr64
+	pushq	%rbx
+	.cfi_def_cfa_offset 16
+	.cfi_offset 3, -16
+	subq	$16, %rsp
 	.cfi_def_cfa_offset 32
-	movq	%rsp, %rdi
+	leaq	12(%rsp), %rbx
+	movq	%rbx, %rdi
 	call	gets
-	movq	%rsp, %rdi
-	call	puts
-	addq	$24, %rsp
+	movq	%rbx, %rdi
+	call	puts@PLT
+	addq	$16, %rsp
+	.cfi_def_cfa_offset 16
+	popq	%rbx
 	.cfi_def_cfa_offset 8
 	ret
 	.cfi_endproc
-.LFE35:
+.LFE40:
 	.size	echo, .-echo
 	.globl	call_echo
 	.type	call_echo, @function
 call_echo:
-.LFB36:
+.LFB41:
 	.cfi_startproc
+	endbr64
 	subq	$8, %rsp
 	.cfi_def_cfa_offset 16
 	movl	$0, %eax
@@ -73,7 +85,7 @@ call_echo:
 	.cfi_def_cfa_offset 8
 	ret
 	.cfi_endproc
-.LFE36:
+.LFE41:
 	.size	call_echo, .-call_echo
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .LC0:
@@ -82,16 +94,21 @@ call_echo:
 	.globl	smash
 	.type	smash, @function
 smash:
-.LFB37:
+.LFB42:
 	.cfi_startproc
+	endbr64
+	pushq	%rax
+	.cfi_def_cfa_offset 16
+	popq	%rax
+	.cfi_def_cfa_offset 8
 	subq	$8, %rsp
 	.cfi_def_cfa_offset 16
-	movl	$.LC0, %edi
-	call	puts
+	leaq	.LC0(%rip), %rdi
+	call	puts@PLT
 	movl	$0, %edi
-	call	exit
+	call	exit@PLT
 	.cfi_endproc
-.LFE37:
+.LFE42:
 	.size	smash, .-smash
 	.section	.rodata.str1.1
 .LC1:
@@ -100,14 +117,15 @@ smash:
 	.globl	main
 	.type	main, @function
 main:
-.LFB38:
+.LFB43:
 	.cfi_startproc
+	endbr64
 	subq	$8, %rsp
 	.cfi_def_cfa_offset 16
-	movl	$.LC1, %esi
-	movl	$1, %edi
+	leaq	.LC1(%rip), %rsi
+	movl	$2, %edi
 	movl	$0, %eax
-	call	__printf_chk
+	call	__printf_chk@PLT
 	movl	$0, %eax
 	call	call_echo
 	movl	$0, %eax
@@ -115,7 +133,23 @@ main:
 	.cfi_def_cfa_offset 8
 	ret
 	.cfi_endproc
-.LFE38:
+.LFE43:
 	.size	main, .-main
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0"
 	.section	.note.GNU-stack,"",@progbits
+	.section	.note.gnu.property,"a"
+	.align 8
+	.long	1f - 0f
+	.long	4f - 1f
+	.long	5
+0:
+	.string	"GNU"
+1:
+	.align 8
+	.long	0xc0000002
+	.long	3f - 2f
+2:
+	.long	0x3
+3:
+	.align 8
+4:
