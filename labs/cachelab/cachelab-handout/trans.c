@@ -11,6 +11,7 @@
 #include "cachelab.h"
 
 int is_transpose(int M, int N, int A[N][M], int B[M][N]);
+void trans(int M, int N, int A[N][M], int B[M][N]);
 
 /* 
  * transpose_submit - This is the solution transpose function that you
@@ -22,7 +23,137 @@ int is_transpose(int M, int N, int A[N][M], int B[M][N]);
 char transpose_submit_desc[] = "Transpose submission";
 void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 {
+    if (M == 32) {
+        int i, j, k, v1, v2, v3, v4, v5, v6, v7, v8;
+        for (i = 0; i < M; i+=8) {
+            for (j = 0; j < N; j+=8) {
+                for (k=i; k < (i+8); k++) {
+                    v1 = A[k][j];
+                    v2 = A[k][j+1];
+                    v3 = A[k][j+2];
+                    v4 = A[k][j+3];
+                    v5 = A[k][j+4];
+                    v6 = A[k][j+5];
+                    v7 = A[k][j+6];
+                    v8 = A[k][j+7];
+
+                    B[j][k] = v1;
+                    B[j+1][k] = v2;
+                    B[j+2][k] = v3;
+                    B[j+3][k] = v4;
+                    B[j+4][k] = v5;
+                    B[j+5][k] = v6;
+                    B[j+6][k] = v7;
+                    B[j+7][k] = v8;
+                }
+            }
+        }
+    } else if (M == 64) {
+        int i, j, k, l, v1, v2, v3, v4, v5, v6, v7, v8;
+        for (i=0; i<N; i+=8) {
+            for (j=0; j<M; j+=8) {
+                //A[0][0] -> B[0][0]
+                //A[0][1] -> B[0][1]
+                for (k=0; k<4; k++) {
+                    v1 = A[i+k][j];
+                    v2 = A[i+k][j+1];
+                    v3 = A[i+k][j+2];
+                    v4 = A[i+k][j+3];
+                    v5 = A[i+k][j+4];
+                    v6 = A[i+k][j+5];
+                    v7 = A[i+k][j+6];
+                    v8 = A[i+k][j+7];
+
+                    B[j+k][i] = v1;
+                    B[j+k][i+1] = v2;
+                    B[j+k][i+2] = v3;
+                    B[j+k][i+3] = v4;
+                    B[j+k][i+4] = v5;
+                    B[j+k][i+5] = v6;
+                    B[j+k][i+6] = v7;
+                    B[j+k][i+7] = v8;
+                }
+                // 转置B[0][0]
+                for (k=0; k<4; k++) {
+                    for (l=0; l<k; l++) {
+                        v1 = B[j+k][i+l];
+                        B[j+k][i+l] = B[j+l][i+k];
+                        B[j+l][i+k] = v1;
+                    }
+                }
+                // 转置B[0][1]
+                for (k=0; k<4; k++) {
+                    for (l=0; l<k; l++) {
+                        v1 = B[j+k][i+l+4];
+                        B[j+k][i+l+4] = B[j+l][i+k+4];
+                        B[j+l][i+k+4] = v1;
+                     }
+                }
+
+                //B[0][1] -> B[1][0]
+                //A[1][0] -> B[0][1]
+                for (k=0; k<4; k++) {
+                    v5 = A[i+4][j+k];
+                    v6 = A[i+5][j+k];
+                    v7 = A[i+6][j+k];
+                    v8 = A[i+7][j+k];
+
+                    v1 = B[j+k][i+4];
+                    v2 = B[j+k][i+5];
+                    v3 = B[j+k][i+6];
+                    v4 = B[j+k][i+7];
+
+                    B[j+k][i+4] = v5;
+                    B[j+k][i+5] = v6;
+                    B[j+k][i+6] = v7;
+                    B[j+k][i+7] = v8;
+
+                    B[j+k+4][i+0] = v1;
+                    B[j+k+4][i+1] = v2;
+                    B[j+k+4][i+2] = v3;
+                    B[j+k+4][i+3] = v4;
+                }
+
+                //A[1][1] -> B[1][1]
+                for (k=0; k<4; k++) {
+                    v1 = A[i+4+k][j+4];
+                    v2 = A[i+4+k][j+5];
+                    v3 = A[i+4+k][j+6];
+                    v4 = A[i+4+k][j+7];
+
+                    B[j+4+k][i+4] = v1;
+                    B[j+4+k][i+5] = v2;
+                    B[j+4+k][i+6] = v3;
+                    B[j+4+k][i+7] = v4;
+                }
+                //转置B[1][1]
+                for (k=0; k<4; k++) {
+                    for (l=0; l<k; l++) {
+                        v1 = B[j+k+4][i+l+4];
+                        B[j+k+4][i+l+4] = B[j+l+4][i+k+4];
+                        B[j+l+4][i+k+4] = v1;
+                     }
+                }
+            }
+        }
+    } else if (M == 61) {
+        int i, j, k, l;
+        int block = 17;
+        for (i=0; i<N; i+=block) {
+            for (j=0; j<M; j+=block) {
+                for (k=i; k<i+block && k<N; k++) {
+                    for (l=j; l<j+block && l<M; l++) {
+                        B[l][k] = A[k][l];
+                    }
+                }
+            }
+        }
+
+    } else {
+        trans(M, N, A, B);
+    }
 }
+
 
 /* 
  * You can define additional transpose functions below. We've defined
