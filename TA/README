@@ -1,0 +1,20 @@
+This directory contains all of material prepared by the TAs, including
+recitations, and C and Linux boot camps. 
+
+* Recitations start week 3 and are held each Monday through week 15.
+
+* Each recitation must have a source pptx file and the corresponding
+  pdf file. Use the following naming convention for recitations: 
+  {rec03, rec04, ..., rec15}.{pptx, pdf}
+
+* If you want to tweak the default recitation slides for week k, k=03,
+  04..., use the following naming convention: 
+  rec<k>-<your AndrewID>.{pptx,pdf}
+  
+
+Files:
+    c_boot_camp.{pptx,pdf}     Slides for C boot camp  
+    c_boot_camp/               Code and puzzles for C boot camp
+    linux_boot_camp.{pptx,pdf} Slides for Linux boot camp
+
+
