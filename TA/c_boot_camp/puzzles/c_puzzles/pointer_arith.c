@@ -3,10 +3,10 @@
  * a void**, etc) */
 
 // given an address, get the value stored at that byte 
-#define GET_BYTE(p) ((void)p)
+#define GET_BYTE(p) (*((char*)(p)))
 
 // given an address, get the value stored at word (4 bytes)
-#define GET_WORD(p) ((void)p)
+#define GET_WORD(p) (*((int*)(p)))
 
 // given an address and a value, write a 1-byte value at that address
 #define PUT_BYTE(p, v) ((void)p; (void)v)
