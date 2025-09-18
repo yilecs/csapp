@@ -26,6 +26,7 @@
 #include "fcyc.h"
 #include "defs.h"
 #include "config.h"
+#include <getopt.h>
 
 /* Team structure that identifies the students */
 extern team_t team; 
@@ -737,16 +738,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
